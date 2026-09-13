@@ -1,0 +1,48 @@
+name: Windows Virtual Machine
+
+on:
+  workflow_dispatch:
+
+jobs:
+  windows:
+    runs-on: windows-latest
+    timeout-minutes: 30
+
+    steps:
+      - name: Mostrar sistema
+        shell: powershell
+        run: |
+          Write-Host "Windows iniciado!"
+          Get-ComputerInfo | Select-Object WindowsProductName
+          Write-Host "Computador: $env:COMPUTERNAME"
+
+      - name: Criar pasta
+        shell: powershell
+        run: |
+          New-Item -ItemType Directory -Force -Path C:\VirtualPC
+          Set-Content C:\VirtualPC\info.txt "PC virtual iniciado"
+
+      - name: Testar CPU
+        shell: powershell
+        run: |
+          Get-CimInstance Win32_Processor |
+          Select-Object Name, NumberOfCores
+
+      - name: Testar memória
+        shell: powershell
+        run: |
+          Get-CimInstance Win32_OperatingSystem |
+          Select-Object TotalVisibleMemorySize, FreePhysicalMemory
+
+      - name: Testar armazenamento
+        shell: powershell
+        run: |
+          Get-PSDrive C |
+          Select-Object Used, Free
+
+      - name: Finalizar
+        shell: powershell
+        run: |
+          Write-Host "PC virtual funcionando!"
+          Write-Host "Ambiente temporário do GitHub Actions."
+          Start-Sleep -Seconds 10
